@@ -30,10 +30,12 @@ function addTask(task) {
     const lastTaskIndex = tasks.length - 1;
     const lastTask = tasks[lastTaskIndex];
     const id = lastTask ? tasks[lastTaskIndex].Id + 1 : 1;
+    let statusOfTask = "to-do"
 
     let newTask = {
         Task: task,
-        Id: id
+        Id: id,
+        Status: statusOfTask
     };
     tasks.push(newTask);
     fs.writeFileSync('./todo.json', JSON.stringify(tasks));
