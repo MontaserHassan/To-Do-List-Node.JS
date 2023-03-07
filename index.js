@@ -1,10 +1,8 @@
 [, , command, task, edTask] = process.argv
 
 const fs = require('fs');
-// const { CLIENT_RENEG_WINDOW } = require('tls');
 const stringifiedTasks = fs.readFileSync('./todo.json', 'utf8') || '[]' // if isNot exist, create empty array
 const tasks = JSON.parse(stringifiedTasks) // this array to json string
-    // const tasks = JSON.parse(fs.readFileSync('./todo.json', { encoding: 'UTF-8' }));
 
 function todoApp(command) {
     switch (command) {
@@ -25,13 +23,16 @@ function todoApp(command) {
     }
 }
 
+function listTasks() {
+    console.log(tasks);
+}
 
 function addTask(task) {
+    if (!task) return;
     const lastTaskIndex = tasks.length - 1;
     const lastTask = tasks[lastTaskIndex];
     const id = lastTask ? tasks[lastTaskIndex].Id + 1 : 1;
-    let statusOfTask = "to-do"
-
+    const statusOfTask = "to-do";
     let newTask = {
         Task: task,
         Id: id,
@@ -43,23 +44,10 @@ function addTask(task) {
 
 }
 
-function listTasks() {
-    console.log(tasks);
-}
-
 function removeTask(id) {
-    // want to know the index number of the task 
-    // is task exist or not
-    const checkingId = (NumOfTask) => NumOfTask.Id == id
-    const taskId = tasks.findIndex(checkingId);
-    // console.log(taskId);
-    if (taskId > -1) {
-        tasks.splice(taskId, 1);
-        fs.writeFileSync('./todo.json', JSON.stringify(tasks));
-        console.log("successful");
-    } else {
-        console.log("task not found");
-    }
+    const newTasks = tasks.filter((task) => task.Id !== Number(id));
+    fs.writeFileSync('./todo.json', JSON.stringify(newTasks));
+    console.log("successful");
 }
 
 function editTask(id, edTask) {
@@ -68,13 +56,14 @@ function editTask(id, edTask) {
     const checkingId = (NumOfTask) => NumOfTask.Id == id
     const taskId = tasks.findIndex(checkingId);
     // console.log(taskId);
-    if (taskId > -1) {
-        tasks[taskId].Task = edTask;
-        fs.writeFileSync('./todo.json', JSON.stringify(tasks));
-        console.log("Modified successfully");
-    } else {
+    if (taskId < -1) {
         console.log("The modification did not succeed");
+        return;
     }
+    tasks[taskId].Task = edTask;
+    fs.writeFileSync('./todo.json', JSON.stringify(tasks));
+    console.log("Modified successfully");
+    return;
 }
 
 todoApp(command);
